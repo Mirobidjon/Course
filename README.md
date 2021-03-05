@@ -1,4 +1,4 @@
-#Course
+Course
 
 This project provides the following features right out of the box
 * RESTful endpoints in the widely accepted format
@@ -40,7 +40,7 @@ make run
 
 All users can register themselves role
 
-##Roles 
+Roles 
 * Students
 * Teachers
 * Directors
@@ -60,7 +60,7 @@ Student can
 * Read all students     ("/api/student") GET
 * Read student          ("/api/student/:id") GET
 
-Teachers can 
+Teacher can 
 * Create group course   ("/api/course") POST
 * Read himself course       ("/api/course/:id") GET
 * Read himself all course   ("/api/course/") GET
@@ -74,7 +74,7 @@ Teachers can
 * Read student          ("/api/student/:id") GET
 * Delete student         ("/api/student/:id") DELETE
 
-Directors can 
+Director can 
 * Read all course   ("/api/course/") GET
 * Read all directors    ("/api/director") GET
 * Read director         ("/api/director/:id") GET
