@@ -19,7 +19,7 @@ own database server.
 
 Run This Project
 ```shell
-# download the starter kit
+# download the starter project
 git clone 
 
 cd Course
