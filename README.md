@@ -22,7 +22,7 @@ Run This Project
 # download the starter kit
 git clone 
 
-cd go-rest-api
+cd Course
 
 # start a PostgreSQL database server in a Docker container
 make createdb
