@@ -19,7 +19,7 @@ func main() {
 
 	db, err := repository.NewPostgresDB(repository.Config{
 		Host:     os.Getenv("host"),
-		Port:     os.Getenv("port"),
+		Port:     os.Getenv("dport"),
 		Username: os.Getenv("username"),
 		Password: os.Getenv("password"),
 		DbName:   os.Getenv("dbname"),
@@ -29,14 +29,17 @@ func main() {
 	if err != nil {
 		logrus.Fatalf("failed initsialized database : %s", err.Error())
 	}
-
+	port := os.Getenv("PORT")
+	if port == "" {
+		logrus.Fatal("env file port not found!")
+	}
 	repos := repository.NewRepository(db)
 	serv := service.NewService(repos)
 	handle := handler.NewHandler(serv)
 
 	svr := new(course.Server)
 
-	if err := svr.Run("8000", handle.InitRoutes()); err != nil {
+	if err := svr.Run(port, handle.InitRoutes()); err != nil {
 		logrus.Fatalf("error occured while running http server : %s", err.Error())
 	}
 }

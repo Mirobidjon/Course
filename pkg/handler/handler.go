@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/Mirobidjon/course/pkg/service"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 const (
@@ -21,6 +22,8 @@ func NewHandler(service *service.Service) *Handler {
 
 func (h Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
+
+	router.GET("/", h.getMenu)
 
 	auth := router.Group("/auth")
 	{
@@ -43,6 +46,8 @@ func (h Handler) InitRoutes() *gin.Engine {
 		}
 
 	}
+
+	router.GET("/api", h.getApi)
 
 	api := router.Group("/api", h.identify)
 	{
@@ -89,4 +94,17 @@ func (h Handler) InitRoutes() *gin.Engine {
 	}
 
 	return router
+}
+
+func (h *Handler) getMenu(c *gin.Context) {
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"You are at the menu": "ok",
+		"You get api":         "ok",
+	})
+}
+
+func (h *Handler) getApi(c *gin.Context) {
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"You are at api the menu": "ok",
+	})
 }
