@@ -41,7 +41,7 @@ make run
 All users can register themselves role
 
 Roles 
-* Students. /auth/student/sign-up
+* Students. /auth/students/sign-up
 * Teachers  /auth/teacher/sign-up
 * Directors /auth/director/sign-up
 
