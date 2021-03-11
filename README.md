@@ -41,9 +41,9 @@ make run
 All users can register themselves role
 
 Roles 
-* Students
-* Teachers
-* Directors
+* Students. /auth/student/sign-up
+* Teachers  /auth/teacher/sign-up
+* Directors /auth/director/sign-up
 
 Student can 
 * Create book           ("/api/book") POST
