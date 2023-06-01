@@ -1,10 +1,12 @@
 package repository
 
 import (
+	"encoding/json"
 	"fmt"
+	"strings"
+
 	"github.com/Mirobidjon/course"
 	"github.com/jmoiron/sqlx"
-	"strings"
 )
 
 type AuthStudentPostgres struct {
@@ -48,15 +50,83 @@ func (r *AuthStudentPostgres) GetAllCourse(id int) ([]course.Course, error) {
 	}
 
 	var courseStudent []course.Course
-	queryCourse := fmt.Sprintf("SELECT id, name, description, student_group  FROM %s WHERE student_group = $1",
+	queryCourse := fmt.Sprintf("SELECT id, name, description, student_group, file_url  FROM %s WHERE student_group = $1 ",
 		courseTable)
 
-	err = r.db.Select(&courseStudent, queryCourse, group)
+	rows, err := r.db.Queryx(queryCourse, group)
 	if err != nil {
 		return nil, err
+
+	}
+
+	for rows.Next() {
+		var (
+			course   course.Course
+			file_url string
+		)
+
+		err := rows.Scan(&course.ID, &course.Name, &course.Description, &course.Student_group, &file_url)
+		if err != nil {
+			return nil, err
+		}
+
+		course.File_url = make(map[int]string)
+		err = json.Unmarshal([]byte(file_url), &course.File_url)
+		if err != nil {
+			return nil, err
+		}
+
+		var mp = make(map[int]string)
+		for i := range course.File_url {
+			if i == id {
+				mp[i] = course.File_url[i]
+			}
+		}
+
+		course.File_url = mp
+		courseStudent = append(courseStudent, course)
 	}
 
 	return courseStudent, nil
+}
+
+func (r *AuthStudentPostgres) UpdateCourseFileUrl(id int, file_url string) (course.Course, error) {
+	var (
+		courseByID course.Course
+		url        string
+	)
+	query := fmt.Sprintf("SELECT id, name, description, student_group, file_url FROM %s WHERE id = $1", courseTable)
+
+	row := r.db.QueryRow(query, id)
+	err := row.Scan(&courseByID.ID, &courseByID.Name, &courseByID.Description, &courseByID.Student_group, &url)
+	if err != nil {
+		return courseByID, err
+	}
+
+	courseByID.File_url = make(map[int]string)
+	err = json.Unmarshal([]byte(url), &courseByID.File_url)
+	if err != nil {
+		return courseByID, err
+	}
+
+	if courseByID.File_url == nil {
+		courseByID.File_url = make(map[int]string)
+	}
+
+	courseByID.File_url[id] = file_url
+
+	js, err := json.Marshal(courseByID.File_url)
+	if err != nil {
+		return courseByID, err
+	}
+
+	queryUpdate := fmt.Sprintf("UPDATE %s SET file_url = $1 WHERE id = $2", courseTable)
+	_, err = r.db.Exec(queryUpdate, js, id)
+	if err != nil {
+		return courseByID, err
+	}
+
+	return courseByID, nil
 }
 
 func (r *AuthStudentPostgres) GetAllStudents() ([]course.GetStudents, error) {

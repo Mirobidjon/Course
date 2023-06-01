@@ -3,7 +3,7 @@ CREATE TABLE students (
     name varchar(255) not null,
     username varchar(255) not null unique,
     password varchar(255) not null,
-    groups int not null unique,
+    groups int not null,
     role varchar(30) not null
 );
 
@@ -19,7 +19,8 @@ CREATE TABLE course (
     id serial not null unique,
     name varchar(255) not null,
     description varchar(255) not null,
-    student_group int references students(groups) not null
+    student_group int references students(groups) not null,
+    file_url varchar(255) not null default ''
 );
 
 CREATE TABLE teacher_course (

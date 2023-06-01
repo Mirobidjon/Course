@@ -1,10 +1,13 @@
 package handler
 
 import (
+	"fmt"
+	"net/http"
+	"os"
+	"strconv"
+
 	"github.com/Mirobidjon/course"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"strconv"
 )
 
 type signIn struct {
@@ -131,4 +134,64 @@ func (h Handler) deleteStudent(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
+}
+
+type fileUrl struct {
+	FileUrl string `json:"file_url"`
+}
+
+func (h Handler) addFileToCourse(c *gin.Context) {
+	role, id, err := h.getRoleAndID(c)
+	if err != nil {
+		return
+	}
+
+	if role != studentRole {
+		NewErrorResponce(c, http.StatusBadRequest, "You aren't Student!")
+		return
+	}
+
+	var input fileUrl
+	err = c.BindJSON(&input)
+	if err != nil {
+		NewErrorResponce(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	course, err := h.service.AuthStudents.UpdateCourseFileUrl(id, input.FileUrl)
+	if err != nil {
+		NewErrorResponce(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, course)
+}
+
+func (h Handler) uploadFile(c *gin.Context) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		NewErrorResponce(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	// id := uuid.NewString()
+
+	if err := c.SaveUploadedFile(file, "public/"+file.Filename); err != nil {
+		NewErrorResponce(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
+		"url":    "/download-file/" + file.Filename,
+	})
+}
+
+func (h Handler) downloadFile(c *gin.Context) {
+	fileUrl := c.Param("id")
+	fmt.Println(fileUrl)
+
+	pwd, _ := os.Getwd()
+
+	c.File(pwd + "/public/" + fileUrl)
 }

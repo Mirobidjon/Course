@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+
 	"github.com/Mirobidjon/course"
 	"github.com/Mirobidjon/course/pkg/repository"
 )
@@ -58,4 +59,8 @@ func (s *AuthStudentService) GetCourseByID(courseID, studentID int) (course.Cour
 
 func (s *AuthStudentService) DeleteStudent(id int) error {
 	return s.repo.DeleteStudent(id)
+}
+
+func (s *AuthStudentService) UpdateCourseFileUrl(id int, file_url string) (course.Course, error) {
+	return s.repo.UpdateCourseFileUrl(id, file_url)
 }

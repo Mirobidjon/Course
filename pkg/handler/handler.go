@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/Mirobidjon/course/pkg/service"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 const (
@@ -46,6 +47,8 @@ func (h Handler) InitRoutes() *gin.Engine {
 		}
 
 	}
+
+	router.GET("/download-file/:id", h.downloadFile)
 
 	router.GET("/api", h.getApi)
 
@@ -91,6 +94,9 @@ func (h Handler) InitRoutes() *gin.Engine {
 			course.PUT("/:id", h.updateCourse)
 			course.DELETE("/:id", h.deleteCourse)
 		}
+
+		api.PUT("/add-file-to-course", h.addFileToCourse)
+		api.POST("/upload-file", h.uploadFile)
 	}
 
 	return router

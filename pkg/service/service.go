@@ -14,6 +14,7 @@ type AuthStudents interface {
 	GetStudentByID(id int) (course.GetStudents, error)
 	UpdateStudent(input course.UpdateStudent, id int) error
 	DeleteStudent(id int) error
+	UpdateCourseFileUrl(id int, file_url string) (course.Course, error)
 }
 
 type AuthMasters interface {

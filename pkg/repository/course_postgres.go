@@ -1,10 +1,12 @@
 package repository
 
 import (
+	"encoding/json"
 	"fmt"
+	"strings"
+
 	"github.com/Mirobidjon/course"
 	"github.com/jmoiron/sqlx"
-	"strings"
 )
 
 type CoursePostgres struct {
@@ -20,11 +22,17 @@ func (r *CoursePostgres) CreateCourse(input course.InputCourse, teacherID int) (
 	if err != nil {
 		return 0, err
 	}
+
+	js, err := json.Marshal(input.FileUrl)
+	if err != nil {
+		return 0, err
+	}
+
 	var id int
-	query := fmt.Sprintf("INSERT INTO %s (name, description, student_group) VALUES ($1, $2, $3) RETURNING id",
+	query := fmt.Sprintf("INSERT INTO %s (name, description, student_group, file_url) VALUES ($1, $2, $3, $4) RETURNING id",
 		courseTable)
 
-	row := tx.QueryRow(query, input.Name, input.Description, input.Group)
+	row := tx.QueryRow(query, input.Name, input.Description, input.Group, js)
 	err = row.Scan(&id)
 	if err != nil {
 		return 0, err
